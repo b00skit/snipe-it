@@ -478,9 +478,23 @@
         $('.snipe-table').bootstrapTable('destroy').each(function () {
 
             var tableCookieId = $(this).data('cookie-id-table');
+            var overrideStorage = null;
             if (tableCookieId === 'hardwareListingTable') {
                 var columnMode = localStorage.getItem('snipeit.hardware_columns_mode') || 'global';
                 if (columnMode === 'local') {
+                    overrideStorage = 'localStorage';
+
+                    // Clear legacy/existing cookies starting with 'hardwareListingTable' to prevent header size limits
+                    var cookies = document.cookie.split(";");
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = cookies[i].trim();
+                        var eqPos = cookie.indexOf("=");
+                        var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                        if (name.indexOf("hardwareListingTable") === 0) {
+                            document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                        }
+                    }
+
                     var path = window.location.pathname.replace(/\/$/, "");
                     var params = new URLSearchParams(window.location.search);
                     var keys = [];
@@ -591,7 +605,7 @@
                 clickToSelect: data_with_default('click-to-select', true),
                 cookie: true,
                 cookieExpire: '2y',
-                cookieStorage: '{{ config('session.bs_table_storage') }}',
+                cookieStorage: overrideStorage || '{{ config('session.bs_table_storage') }}',
                 iconsPrefix: 'fa',
                 maintainSelected: data_with_default('maintain-selected', true),
                 minimumCountColumns: data_with_default('minimum-count-columns', 2),
