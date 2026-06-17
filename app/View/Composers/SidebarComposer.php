@@ -34,12 +34,6 @@ class SidebarComposer
 
             $view->with([
                 'total_assets' => Asset::AssetsForShow()->count(),
-                'total_rtd_sidebar' => Asset::RTD()->count(),
-                'total_deployed_sidebar' => Asset::Deployed()->count(),
-                'total_archived_sidebar' => Asset::Archived()->count(),
-                'total_pending_sidebar' => Asset::Pending()->count(),
-                'total_undeployable_sidebar' => Asset::Undeployable()->count(),
-                'total_byod_sidebar' => Asset::where('byod', 1)->count(),
                 'total_due_for_audit' => $due_for_audit,
                 'total_overdue_for_audit' => $overdue_for_audit,
                 'total_due_for_checkin' => $due_for_checkin,

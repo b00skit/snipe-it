@@ -49,6 +49,7 @@ return [
     'asset_deleted_warning' => 'This asset has been deleted. You must restore it before you can assign it to someone.',
     'assigned_date' => 'Date Assigned',
     'assigned_to' => 'Assigned to :name',
+    'asset_operations' => 'Asset Operations',
     'assignee' => 'Assigned to',
     'avatar_delete' => 'Delete Avatar',
     'avatar_upload' => 'Upload Avatar',

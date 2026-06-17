@@ -30,6 +30,7 @@
         buttons="assetButtons"
         api_url="{{ $route }}"
         export_filename="export-{{ str_slug($name) }}-assets-{{ date('Y-m-d') }}"
+        name="hardware"
     />
 
 @endcan

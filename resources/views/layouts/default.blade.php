@@ -1500,7 +1500,7 @@
                             </li>
                         @endcan
                         @can('index', \App\Models\Asset::class)
-                            <li class="treeview{{ ((request()->is('statuslabels/*') || request()->is(['hardware*', 'maintenances*'])) ? ' active' : '') }}">
+                            <li class="treeview{{ ((request()->is('statuslabels/*') || (request()->is('categories/*') && ($category_param = request()->route('category')) && ($category_param instanceof \App\Models\Category) && ($category_param->category_type == 'asset')) || (request()->is('hardware*') && !request()->is(['hardware/quickscancheckin*', 'hardware/bulkcheckout*', 'hardware/requested*', 'hardware/bulkaudit*', 'hardware/history*', 'hardware/audit/due*', 'hardware/checkins/due*']) && request()->query('status_type') != 'Deleted')) && !request()->is('maintenances*') ? ' active' : '') }}">
                                 <a href="#">
                                     <x-icon type="assets" class="fa-fw" />
                                     <span>{{ trans('general.assets') }}</span>
@@ -1529,58 +1529,50 @@
                                         @endforeach
                                     @endif
 
+                                    <li class="divider">&nbsp;</li>
+                                    <?php $category_navs = \App\Models\Category::where('category_type', '=', 'asset')->withCount('showableAssets as assets_count')->orderBy('name', 'asc')->get(); ?>
+                                    @if (count($category_navs) > 0)
+                                        @foreach ($category_navs as $category_nav)
+                                            <li{!! (request()->is('categories/'.$category_nav->id) ? ' class="active"' : '') !!}>
+                                                <a href="{{ route('categories.show', ['category' => $category_nav->id]) }}">
+                                                    <i class="fa-solid fa-square fa-fw text-grey" aria-hidden="true"{!! ($category_nav->tag_color ? ' style="color: '.e($category_nav->tag_color).'"' : '') !!}></i>
+                                                    {{ $category_nav->name }}
+                                                    <span class="badge badge-secondary">{{ $category_nav->assets_count }}</span>
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    @endif
 
-                                    <li id="deployed-sidenav-option" {!! (request()->query('status_type') == 'Deployed' ? ' class="active"' : '') !!}>
-                                        <a href="{{ url('hardware?status_type=Deployed') }}">
-                                            <x-icon type="circle" class="text-blue fa-fw" />
-                                            {{ trans('general.deployed') }}
-                                            <span class="badge">{{ (isset($total_deployed_sidebar)) ? $total_deployed_sidebar : '' }}</span>
-                                        </a>
-                                    </li>
-                                    <li id="rtd-sidenav-option"{!! (request()->query('status_type') == 'RTD' ? ' class="active"' : '') !!}>
-                                        <a href="{{ url('hardware?status_type=RTD') }}">
-                                            <x-icon type="circle" class="text-green fa-fw" />
-                                            {{ trans('general.ready_to_deploy') }}
-                                            <span class="badge">{{ (isset($total_rtd_sidebar)) ? $total_rtd_sidebar : '' }}</span>
-                                        </a>
-                                    </li>
-                                    <li id="pending-sidenav-option"{!! (request()->query('status_type') == 'Pending' ? ' class="active"' : '') !!}>
-                                        <a href="{{ url('hardware?status_type=Pending') }}">
-                                            <x-icon type="circle" class="text-orange fa-fw" />
-                                            {{ trans('general.pending') }}
-                                            <span class="badge">{{ (isset($total_pending_sidebar)) ? $total_pending_sidebar : '' }}</span>
-                                        </a>
-                                    </li>
-                                    <li id="undeployable-sidenav-option"{!! (request()->query('status') == 'Undeployable' ? ' class="active"' : '') !!} ><a
-                                            href="{{ url('hardware?status_type=Undeployable') }}">
-                                            <x-icon type="x" class="text-red fa-fw" />
-                                            {{ trans('general.undeployable') }}
-                                            <span class="badge">{{ (isset($total_undeployable_sidebar)) ? $total_undeployable_sidebar : '' }}</span>
-                                        </a>
-                                    </li>
-                                    <li id="byod-sidenav-option"{!! (request()->query('status_type') == 'byod' ? ' class="active"' : '') !!}>
-                                        <a
-                                            href="{{ url('hardware?status_type=byod') }}">
-                                            <x-icon type="x" class="text-red fa-fw" />
-                                            {{ trans('general.byod') }}
-                                            <span class="badge">{{ (isset($total_byod_sidebar)) ? $total_byod_sidebar : '' }}</span>
-                                        </a>
-                                    </li>
-                                    <li id="archived-sidenav-option"{!! (request()->query('status_type') == 'Archived' ? ' class="active"' : '') !!}>
-                                        <a
-                                            href="{{ url('hardware?status_type=Archived') }}">
-                                            <x-icon type="x" class="text-red fa-fw" />
-                                            {{ trans('admin/hardware/general.archived') }}
-                                            <span class="badge">{{ (isset($total_archived_sidebar)) ? $total_archived_sidebar : '' }}</span>
-                                        </a>
-                                    </li>
-                                    <li id="requestable-sidenav-option"{!! (request()->query('status_type') == 'Requestable' ? ' class="active"' : '') !!}>
-                                        <a
-                                            href="{{ url('hardware?status_type=Requestable') }}">
-                                            <x-icon type="checkmark" class="text-blue fa-fw" />
-                                            {{ trans('admin/hardware/general.requestable') }}
-                                        </a>
-                                    </li>
+                                </ul>
+                            </li>
+                        @endcan
+                        @can('index', \App\Models\Asset::class)
+                            <li class="treeview{{ (request()->is(['hardware/quickscancheckin*', 'hardware/bulkcheckout*', 'hardware/requested*', 'hardware/bulkaudit*', 'hardware/history*', 'hardware/audit/due*', 'hardware/checkins/due*', 'maintenances*']) || request()->query('status_type') == 'Deleted' ? ' active' : '') }}">
+                                <a href="#">
+                                    <i class="fa-solid fa-screwdriver-wrench fa-fw"></i>
+                                    <span>{{ trans('general.asset_operations') }}</span>
+                                    <x-icon type="angle-left" class="pull-right fa-fw"/>
+                                </a>
+                                <ul class="treeview-menu">
+                                    @can('checkin', \App\Models\Asset::class)
+                                        <li{!! (request()->is('hardware/quickscancheckin') ? ' class="active"' : '') !!}>
+                                            <a href="{{ route('hardware/quickscancheckin') }}">
+                                                {{ trans('general.quickscan_checkin') }}
+                                            </a>
+                                        </li>
+                                    @endcan
+
+                                    @can('checkout', \App\Models\Asset::class)
+                                        <li{!! (request()->is('hardware/bulkcheckout') ? ' class="active"' : '') !!}>
+                                            <a href="{{ route('hardware.bulkcheckout.show') }}">
+                                                {{ trans('general.bulk_checkout') }}
+                                            </a>
+                                        </li>
+                                        <li{!! (request()->is('hardware/requested') ? ' class="active"' : '') !!}>
+                                            <a href="{{ route('assets.requested') }}">
+                                                {{ trans('general.requested') }}</a>
+                                        </li>
+                                    @endcan
 
                                     @can('audit', \App\Models\Asset::class)
                                         <li id="audit-due-sidenav-option"{!! (request()->is('hardware/audit/due') ? ' class="active"' : '') !!}>
@@ -1600,27 +1592,6 @@
                                             <span class="badge">{{ (isset($total_due_and_overdue_for_checkin)) ? $total_due_and_overdue_for_checkin : '' }}</span>
                                         </a>
                                     </li>
-                                    @endcan
-
-                                    <li class="divider">&nbsp;</li>
-                                    @can('checkin', \App\Models\Asset::class)
-                                        <li{!! (request()->is('hardware/quickscancheckin') ? ' class="active"' : '') !!}>
-                                            <a href="{{ route('hardware/quickscancheckin') }}">
-                                                {{ trans('general.quickscan_checkin') }}
-                                            </a>
-                                        </li>
-                                    @endcan
-
-                                    @can('checkout', \App\Models\Asset::class)
-                                        <li{!! (request()->is('hardware/bulkcheckout') ? ' class="active"' : '') !!}>
-                                            <a href="{{ route('hardware.bulkcheckout.show') }}">
-                                                {{ trans('general.bulk_checkout') }}
-                                            </a>
-                                        </li>
-                                        <li{!! (request()->is('hardware/requested') ? ' class="active"' : '') !!}>
-                                            <a href="{{ route('assets.requested') }}">
-                                                {{ trans('general.requested') }}</a>
-                                        </li>
                                     @endcan
 
                                     @can('create', \App\Models\Asset::class)
@@ -1650,7 +1621,6 @@
                                             </a>
                                         </li>
                                     @endcan
-
                                 </ul>
                             </li>
                         @endcan
