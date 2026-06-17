@@ -477,6 +477,32 @@
 
         $('.snipe-table').bootstrapTable('destroy').each(function () {
 
+            var tableCookieId = $(this).data('cookie-id-table');
+            if (tableCookieId === 'hardwareListingTable') {
+                var columnMode = localStorage.getItem('snipeit.hardware_columns_mode') || 'global';
+                if (columnMode === 'local') {
+                    var path = window.location.pathname.replace(/\/$/, "");
+                    var params = new URLSearchParams(window.location.search);
+                    var keys = [];
+                    params.forEach(function(value, key) {
+                        var excludedKeys = ['search', 'sort', 'order', 'offset', 'limit', 'page', 'topsearch', 'assetName', '_', '_token'];
+                        if (excludedKeys.indexOf(key) === -1) {
+                            keys.push(key + '=' + value);
+                        }
+                    });
+                    keys.sort();
+                    var suffix = '_' + path.split('/').filter(Boolean).join('_');
+                    if (keys.length > 0) {
+                        suffix += '_' + keys.join('_');
+                    }
+                    suffix = suffix.replace(/[^a-zA-Z0-9_]/g, '_');
+                    
+                    tableCookieId += suffix;
+                    $(this).attr('data-cookie-id-table', tableCookieId);
+                    $(this).data('cookie-id-table', tableCookieId);
+                }
+            }
+
             data_export_options = $(this).attr('data-export-options');
             export_options = data_export_options ? JSON.parse(data_export_options) : {};
             export_options['htmlContent'] = false; // this is already the default; but let's be explicit about it

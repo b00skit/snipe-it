@@ -579,6 +579,8 @@ return [
     'light_mode' => 'Light Mode',
     'dark_mode' => 'Dark Mode',
     'light_dark' => 'Light/Dark Mode',
+    'global_hardware_columns' => 'Global Hardware Columns',
+    'local_hardware_columns' => 'Local Hardware Columns',
     'system_default' => 'Use System Settings',
     'system_default_help' => 'This will reset your light/dark mode preferences to use the defaults set in your computer operating system preferences.',
     'theme' => 'Theme',

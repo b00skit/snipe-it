@@ -1442,6 +1442,17 @@
                                             </a>
                                         </li>
 
+                                        <li>
+                                            <a type="button" id="hardware-columns-global" class="btn-link btn-anchor" onclick="event.preventDefault();">
+                                                <i id="hardware-columns-global-icon" class="fa-solid fa-fw"></i> {{ trans('general.global_hardware_columns') }}
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a type="button" id="hardware-columns-local" class="btn-link btn-anchor" onclick="event.preventDefault();">
+                                                <i id="hardware-columns-local-icon" class="fa-solid fa-fw"></i> {{ trans('general.local_hardware_columns') }}
+                                            </a>
+                                        </li>
+
                                         @can('self.api')
                                             <li {!! (request()->is('account/api') ? ' class="active"' : '') !!}>
                                                 <a href="{{ route('user.api') }}">
@@ -2207,6 +2218,59 @@
 
                 currentThemeSetting = newTheme;
             });
+
+            /**
+             * Hardware Columns Mode: Global or Local
+             */
+            const globalBtn = document.getElementById("hardware-columns-global");
+            const localBtn = document.getElementById("hardware-columns-local");
+            const globalIcon = document.getElementById("hardware-columns-global-icon");
+            const localIcon = document.getElementById("hardware-columns-local-icon");
+
+            function updateHardwareColumnsUI(mode) {
+                if (mode === "local") {
+                    if (globalIcon) {
+                        globalIcon.className = "fa-solid fa-fw";
+                    }
+                    if (localIcon) {
+                        localIcon.className = "fa-solid fa-check fa-fw";
+                    }
+                } else {
+                    if (globalIcon) {
+                        globalIcon.className = "fa-solid fa-check fa-fw";
+                    }
+                    if (localIcon) {
+                        localIcon.className = "fa-solid fa-fw";
+                    }
+                }
+            }
+
+            let columnsMode = localStorage.getItem("snipeit.hardware_columns_mode") || "global";
+            updateHardwareColumnsUI(columnsMode);
+
+            if (globalBtn) {
+                globalBtn.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    if (columnsMode !== "global") {
+                        localStorage.setItem("snipeit.hardware_columns_mode", "global");
+                        columnsMode = "global";
+                        updateHardwareColumnsUI("global");
+                        window.location.reload();
+                    }
+                });
+            }
+
+            if (localBtn) {
+                localBtn.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    if (columnsMode !== "local") {
+                        localStorage.setItem("snipeit.hardware_columns_mode", "local");
+                        columnsMode = "local";
+                        updateHardwareColumnsUI("local");
+                        window.location.reload();
+                    }
+                });
+            }
 
 
 
