@@ -85,6 +85,10 @@ Route::group(
             [AssetsController::class, 'getAssetByTag']
         )->where('any', '.*')->name('findbytag/hardware');
 
+        Route::get('byname/{any?}',
+            [AssetsController::class, 'getAssetByName']
+        )->where('any', '.*')->name('findbyname/hardware');
+
         Route::get('byserial/{any?}',
             [AssetsController::class, 'getAssetBySerial']
         )->where('any', '.*')->name('findbyserial/hardware');

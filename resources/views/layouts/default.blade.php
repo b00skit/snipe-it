@@ -1284,13 +1284,13 @@
 
                             @can('index', \App\Models\Asset::class)
                                 <li>
-                                    <form class="navbar-form navbar-left form-inline" role="search" action="{{ route('findbytag/hardware') }}" method="get">
+                                    <form class="navbar-form navbar-left form-inline" role="search" action="{{ route('findbyname/hardware') }}" method="get">
 
                                                 <div class="input-group col-xs-12" style="border: 0 !important;">
-                                                    <label class="sr-only" for="tagSearch">
-                                                        {{ trans('general.lookup_by_tag') }}
+                                                    <label class="sr-only" for="nameSearch">
+                                                        {{ trans('general.lookup_by_name') }}
                                                     </label>
-                                                    <input type="text" class="form-control" id="tagSearch" name="assetTag" placeholder="{{ trans('general.lookup_by_tag') }}">
+                                                    <input type="text" class="form-control" id="nameSearch" name="assetName" placeholder="{{ trans('general.lookup_by_name') }}">
                                                     <span class="input-group-btn">
                                                         <button type="submit" id="topSearchButton" class="btn btn-sm btn-theme" style="padding: 7px 10px 7px 10px; "><x-icon type="search" class="fa-fw" /><div class="sr-only">{{ trans('general.search') }}</div></button>
                                                     </span>

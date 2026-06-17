@@ -5,6 +5,7 @@ return [
     'undeployable' => 'The following assets cannot be deployed and have been removed from checkout: :asset_tags',
     'does_not_exist' => 'Asset does not exist.',
     'does_not_exist_var' => 'Asset with tag :asset_tag not found.',
+    'name_does_not_exist_var' => 'Asset with name :name not found.',
     'no_tag' => 'No asset tag provided.',
     'does_not_exist_or_not_requestable' => 'That asset does not exist or is not requestable.',
     'assoc_users' => 'This asset is currently checked out to a user and cannot be deleted. Please check the asset in first, and then try deleting again. ',

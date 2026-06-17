@@ -625,6 +625,31 @@ class AssetsController extends Controller
     }
 
     /**
+     * Redirect to the asset show page if unique name match, otherwise redirect to list with search parameter.
+     *
+     * @param  string  $name
+     */
+    public function getAssetByName(Request $request, $name = null): RedirectResponse
+    {
+        $name = $name ? $name : $request->input('assetName');
+        $topsearch = ($request->input('topsearch') == 'true');
+
+        // Search for an exact and unique asset name match
+        $assets = Asset::where('name', '=', $name);
+
+        // If not a unique result, redirect to the index view
+        if ($assets->count() != 1) {
+            return redirect()->route('hardware.index')
+                ->with('search', $name)
+                ->with('warning', trans('admin/hardware/message.name_does_not_exist_var', ['name' => $name]));
+        }
+        $asset = $assets->first();
+        $this->authorize('view', $asset);
+
+        return redirect()->route('hardware.show', $asset->id)->with('topsearch', $topsearch);
+    }
+
+    /**
      * Return a QR code for the asset
      *
      * @author [A. Gianotto] [<snipe@snipe.net>]
