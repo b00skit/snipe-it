@@ -1520,8 +1520,8 @@
                                     <?php $status_navs = \App\Models\Statuslabel::where('show_in_nav', '=', 1)->withCount('assets as asset_count')->get(); ?>
                                     @if (count($status_navs) > 0)
                                         @foreach ($status_navs as $status_nav)
-                                            <li{!! (request()->is('statuslabels/'.$status_nav->id) ? ' class="active"' : '') !!}>
-                                                <a href="{{ route('statuslabels.show', ['statuslabel' => $status_nav->id]) }}">
+                                            <li{!! (request()->query('status_id') == $status_nav->id ? ' class="active"' : '') !!}>
+                                                <a href="{{ url('hardware?status_id='.$status_nav->id) }}">
                                                     <i class="fas fa-circle text-grey fa-fw"
                                                        aria-hidden="true"{!!  ($status_nav->color!='' ? ' style="color: '.e($status_nav->color).'"' : '') !!}></i>
                                                     {{ $status_nav->name }}
@@ -1533,8 +1533,8 @@
                                     <?php $category_navs = \App\Models\Category::where('category_type', '=', 'asset')->withCount('showableAssets as assets_count')->orderBy('name', 'asc')->get(); ?>
                                     @if (count($category_navs) > 0)
                                         @foreach ($category_navs as $category_nav)
-                                            <li{!! (request()->is('categories/'.$category_nav->id) ? ' class="active"' : '') !!}>
-                                                <a href="{{ route('categories.show', ['category' => $category_nav->id]) }}">
+                                            <li{!! (request()->query('category_id') == $category_nav->id ? ' class="active"' : '') !!}>
+                                                <a href="{{ url('hardware?category_id='.$category_nav->id) }}">
                                                     <i class="fa-solid fa-square fa-fw text-grey" aria-hidden="true"{!! ($category_nav->tag_color ? ' style="color: '.e($category_nav->tag_color).'"' : '') !!}></i>
                                                     {{ $category_nav->name }}
                                                     <span class="badge badge-secondary">{{ $category_nav->assets_count }}</span>

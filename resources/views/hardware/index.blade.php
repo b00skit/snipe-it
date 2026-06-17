@@ -7,6 +7,10 @@
       $requestOrderNumber = request()->input('order_number');
       $requestCompanyId = request()->input('company_id');
       $requestStatusTypeId = request()->input('status_id');
+      $requestCategoryId = request()->input('category_id');
+
+      $statuslabel = is_numeric($requestStatusTypeId) ? \App\Models\Statuslabel::find($requestStatusTypeId) : null;
+      $category = is_numeric($requestCategoryId) ? \App\Models\Category::find($requestCategoryId) : null;
   @endphp
 
   @if (is_scalar($requestCompanyId) && ($company instanceof \App\Models\Company))
@@ -15,7 +19,11 @@
 
 
 
-  @if ($requestStatusType)
+  @if ($statuslabel)
+    {{ $statuslabel->name }}
+  @elseif ($category)
+    {{ $category->name }}
+  @elseif ($requestStatusType)
       @if ($requestStatusType=='Pending')
     {{ trans('general.pending') }}
       @elseif ($requestStatusType=='RTD')
@@ -34,11 +42,11 @@
     {{ ucfirst(trans('general.deleted')) }}
       @elseif ($requestStatusType=='byod')
     {{ strtoupper(trans('general.byod')) }}
+      @endif
+  @else
+    {{ trans('general.all') }}
   @endif
-@else
-{{ trans('general.all') }}
-@endif
-{{ trans('general.assets') }}
+  {{ trans('general.assets') }}
 
   @if (Request::has('order_number') && is_scalar($requestOrderNumber))
     : Order #{{ strval($requestOrderNumber) }}
@@ -61,6 +69,7 @@
                     'order_number' => is_scalar($requestOrderNumber) ? strval($requestOrderNumber) : null,
                     'company_id' => is_scalar($requestCompanyId) ? $requestCompanyId : null,
                     'status_id' => is_scalar($requestStatusTypeId) ? $requestStatusTypeId : null,
+                    'category_id' => is_scalar($requestCategoryId) ? $requestCategoryId : null,
                 ))"
                 :status_type="is_scalar($requestStatusType) ? $requestStatusType : null"
             />
